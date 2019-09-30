@@ -12,6 +12,11 @@ if size < 1 then
 	print( "Excavate diameter must be positive" )
 	return
 end
+
+if not refuel() then
+	print( "Out of Fuel" )
+	return
+end
 	
 local depth = 0
 local unloaded = 0
@@ -20,8 +25,8 @@ local collected = 0
 local xPos,zPos = 0,0
 local xDir,zDir = 0,1
 
-local goTo -- Filled in further down
-local refuel -- Filled in further down
+local goTo
+local refuel
  
 local function unload( _bKeepOneFuelStack )
 	print( "Unloading items..." )
@@ -44,12 +49,16 @@ local function unload( _bKeepOneFuelStack )
 	turtle.select(1)
 end
 
+local function awaitSupplies()
+  
+end
+
 local function returnSupplies()
 	local x,y,z,xd,zd = xPos,depth,zPos,xDir,zDir
 	print( "Returning to surface..." )
 	goTo( 0,0,0,0,-1 )
 	
-	local fuelNeeded = 2*(x+y+z) + 1
+	local fuelNeeded = 2 * (x + y + z) + 1
 	if not refuel( fuelNeeded ) then
 		unload( true )
 		print( "Waiting for fuel" )
@@ -89,13 +98,13 @@ local function collect()
 	return true
 end
 
-function refuel( ammount )
+function refuel( amount )
 	local fuelLevel = turtle.getFuelLevel()
 	if fuelLevel == "unlimited" then
 		return true
 	end
 	
-	local needed = ammount or (xPos + zPos + depth + 2)
+	local needed = amount or (xPos + zPos + depth + 2)
 	if turtle.getFuelLevel() < needed then
 		local fueled = false
 		for n=1,16 do
@@ -272,11 +281,6 @@ function goTo( x, y, z, xd, zd )
 	end
 end
 
-if not refuel() then
-	print( "Out of Fuel" )
-	return
-end
-
 print( "Excavating..." )
 
 local reseal = false
@@ -288,8 +292,8 @@ end
 local alternate = 0
 local done = false
 while not done do
-	for n=1,size do
-		for m=1,size-1 do
+	for n = 1, size do
+		for m = 1, size - 1 do
 			if not tryForwards() then
 				done = true
 				break
@@ -298,8 +302,8 @@ while not done do
 		if done then
 			break
 		end
-		if n<size then
-			if math.fmod(n + alternate,2) == 0 then
+		if n < size then
+			if math.fmod(n + alternate, 2) == 0 then
 				turnLeft()
 				if not tryForwards() then
 					done = true
@@ -321,7 +325,7 @@ while not done do
 	end
 	
 	if size > 1 then
-		if math.fmod(size,2) == 0 then
+		if math.fmod(size, 2) == 0 then
 			turnRight()
 		else
 			if alternate == 0 then
