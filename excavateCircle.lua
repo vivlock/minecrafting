@@ -33,5 +33,46 @@ except that we will only dig spaces that are within the perimeter
 
 I think the best origin point will be the center of one side, so the return point chest/charger won't get dug out, or the complexity of figuring out a "corner"
 
-
 ]]--
+
+local tArgs = { ... }
+if #tArgs ~= 1 then
+	print( "Usage: excavate <radius>" )
+	return
+end
+
+local radius = tonumber( tArgs[1] )
+if radius < 1 then
+	print( "Excavate radius must be positive" )
+	return
+end
+
+if not refuel() then
+	print( "Out of Fuel" )
+	return
+end
+	
+local depth = 0
+local unloaded = 0
+local collected = 0
+
+local xPos,zPos = 0, (0 - radius)
+local xDir,zDir = 0, 1
+local radiusSq = radius * radius
+
+local goTo
+local refuel
+
+
+local function isWithinCircle( x, y )
+  local fp = ( x * x ) + ( y * y ) - radiusSq
+
+  if( fp <= 0 ) then
+    return true
+  end
+
+  return false
+end
+
+local
+

@@ -49,10 +49,6 @@ local function unload( _bKeepOneFuelStack )
 	turtle.select(1)
 end
 
-local function awaitSupplies()
-  
-end
-
 local function returnSupplies()
 	local x,y,z,xd,zd = xPos,depth,zPos,xDir,zDir
 	print( "Returning to surface..." )
@@ -65,6 +61,8 @@ local function returnSupplies()
 		while not refuel( fuelNeeded ) do
 			os.pullEvent( "turtle_inventory" )
 		end
+		--unload again to leave buckets
+		unload( true )
 	else
 		unload( true )	
 	end
@@ -105,9 +103,15 @@ function refuel( amount )
 	end
 	
 	local needed = amount or (xPos + zPos + depth + 2)
+	
 	if turtle.getFuelLevel() < needed then
 		local fueled = false
 		for n=1,16 do
+			if turtle.getItemCount(n) > 0 then
+				turtle.select(n)
+				turtle.refuel()
+			end
+			--[[
 			if turtle.getItemCount(n) > 0 then
 				turtle.select(n)
 				if turtle.refuel(1) then
@@ -120,12 +124,11 @@ function refuel( amount )
 					end
 				end
 			end
+			]]--
 		end
-		turtle.select(1)
-		return false
 	end
 	
-	return true
+	return turtle.getFuelLevel >= needed
 end
 
 local function tryForwards()
